@@ -95,6 +95,7 @@
 '       <~var date="sql">   output "yyyy-mm-dd hh:mm:ss" - sql date and time
 ' url           - add http:// to begin of string if absent
 ' number_format - FormatNumber(value, 2) => 12345.12
+' currency      - ToString("C2"), currency format with negative values, i.e. $(2,800.00). In currency="N" notaion, N is a precision (default is 2). 
 ' truncate      - truncate with options <~tag truncate="80" trchar="..." trword="1" trend="1">
 ' strip_tags
 ' trim
@@ -712,6 +713,10 @@ Public Class ParsePage
                     Dim groupdigits = IIf(hattrs.ContainsKey("nfthousands") AndAlso hattrs("nfthousands") = "", TriState.False, TriState.True) 'default - group digits, but if nfthousands empty - don't
                     value = FormatNumber(Utils.f2float(value), precision, TriState.UseDefault, TriState.False, groupdigits)
                     attr_count -= 1
+                End If
+                If attr_count > 0 AndAlso hattrs.ContainsKey("currency") Then
+                    Dim precision = IIf(hattrs("currency") > "", "C" + Utils.f2int(hattrs("currency")).ToString(), "C2")
+                    value = Utils.f2float(value).ToString(precision)
                 End If
                 If attr_count > 0 AndAlso hattrs.ContainsKey("date") Then
                     Dim dformat As String = hattrs("date")
